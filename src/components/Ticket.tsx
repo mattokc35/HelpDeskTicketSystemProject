@@ -1,8 +1,10 @@
+import React, { useState } from "react";
 import {
   TicketContainer,
   TicketInfo,
   TicketTitle,
   TicketDetails,
+  Button,
 } from "./styledComponents/StyledComponents";
 import TicketStatusSelect from "./TicketStatusSelect";
 import { updateTicketStatus } from "../network/NetworkRequests";
@@ -19,6 +21,7 @@ export interface TicketInterface {
   email: string;
   description: string;
   status: TicketStatusEnum;
+  submissionDate: Date;
   onContact: () => void;
 }
 
@@ -28,13 +31,18 @@ const Ticket: React.FC<TicketInterface> = ({
   email,
   description,
   status,
+  submissionDate,
   onContact,
 }) => {
+  const [successMessage, setSuccessMessage] = useState<string>("");
+
   const handleSaveStatus = async (newStatus: TicketStatusEnum) => {
     try {
       await updateTicketStatus(_id, newStatus);
-      console.log("Ticket status updated successfully!");
-      window.alert("Ticket status updated successfully!");
+      setSuccessMessage("Ticket status updated successfully!");
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
     } catch (error) {
       console.error("Error updating ticket status:", error);
     }
@@ -44,16 +52,21 @@ const Ticket: React.FC<TicketInterface> = ({
     <TicketContainer>
       <TicketInfo>
         <TicketDetails>
-          <TicketTitle>{name}</TicketTitle>
-          <p>{email}</p>
-          <p>{description}</p>
+          <TicketTitle>{`Name: ${name}`}</TicketTitle>
+          <p>{`Ticket ID: ${_id}`}</p>
+          <p>{`Email: ${email}`}</p>
+          <p>{`Description: ${description}`}</p>
+          <p>{`Submission Date: ${new Date(
+            submissionDate
+          ).toLocaleString()}`}</p>
         </TicketDetails>
         <TicketStatusSelect
           initialStatus={status}
           onUpdateStatus={handleSaveStatus}
         />
       </TicketInfo>
-      <button onClick={onContact}>Contact</button>{" "}
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+      <Button onClick={onContact}>Contact</Button>{" "}
     </TicketContainer>
   );
 };

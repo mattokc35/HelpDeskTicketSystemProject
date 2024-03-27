@@ -5,7 +5,7 @@ import {
   Input,
   TextArea,
   Button,
-} from "./styledComponents/StyledComponents";
+} from "../components/styledComponents/StyledComponents";
 import { createTicket } from "../network/NetworkRequests";
 
 interface HomePageProps {
@@ -17,17 +17,17 @@ const HomePage: React.FC<HomePageProps> = ({ onTicketCreated }) => {
   const [email, setEmail] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const isFormValid = () => {
-    return (
-      name.trim() !== "" && email.trim() !== "" && description.trim() !== ""
-    );
-  };
-
+  const [validationError, setValidationError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!isFormValid()) {
+    if (
+      name.trim() === "" ||
+      email.trim() === "" ||
+      description.trim() === ""
+    ) {
+      setValidationError("Please fill out all fields.");
       return;
     }
 
@@ -36,10 +36,11 @@ const HomePage: React.FC<HomePageProps> = ({ onTicketCreated }) => {
     createTicket(name, email, description)
       .then(() => {
         console.log("Ticket created successfully!");
-        window.alert("Ticket created successfully!");
+        setValidationError("");
         setName("");
         setEmail("");
         setDescription("");
+        setSubmitSuccess(true);
         onTicketCreated();
       })
       .catch((error) => {
@@ -52,20 +53,26 @@ const HomePage: React.FC<HomePageProps> = ({ onTicketCreated }) => {
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
+    setSubmitSuccess(false);
+    setValidationError("");
   };
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
+    setSubmitSuccess(false);
+    setValidationError("");
   };
 
   const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
+    setSubmitSuccess(false);
+    setValidationError("");
   };
 
   return (
     <Container>
       <FormContainer>
-        <h2>Help Desk Support System</h2>
+        <h3>Help Desk Support System</h3>
         <form onSubmit={handleSubmit}>
           <Input
             type="text"
@@ -84,11 +91,11 @@ const HomePage: React.FC<HomePageProps> = ({ onTicketCreated }) => {
             value={description}
             onChange={handleDescriptionChange}
           />
-          <p>
-            Please fill out each field and then hit "submit" to raise a support
-            ticket!
-          </p>
-          <Button type="submit" disabled={!isFormValid() || isSubmitting}>
+          {validationError && <p style={{ color: "red" }}>{validationError}</p>}
+          {submitSuccess && (
+            <p style={{ color: "green" }}>Ticket submitted successfully!</p>
+          )}{" "}
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit Ticket"}
           </Button>
         </form>

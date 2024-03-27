@@ -1,51 +1,83 @@
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   ModalBackdrop,
   ModalContent,
   TextAreaModal,
   InputField,
-  CloseButton,
+  Button,
 } from "./styledComponents/StyledComponents";
-interface SendMessageModalProps {
+
+interface EmailModalProps {
   isOpen: boolean;
   onClose: () => void;
   email: string;
 }
 
-const SendMessageModal: React.FC<SendMessageModalProps> = ({
-  isOpen,
-  onClose,
-  email,
-}) => {
+const EmailModal: React.FC<EmailModalProps> = ({ isOpen, onClose, email }) => {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   const handleSubjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSubject(e.target.value);
+    setValidationError("");
+    setSubmitSuccess(false);
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
+    setValidationError("");
+    setSubmitSuccess(false);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (subject.trim() === "") {
+      setValidationError("Please enter a subject.");
+      return;
+    }
+
+    if (message.trim() === "") {
+      setValidationError("Please enter a message.");
+      return;
+    }
+
     console.log(`Would normally send email here with body: \n`);
     console.log("Email:", email);
     console.log("Subject:", subject);
     console.log("Message:", message);
-    window.alert("Contact Email Sent Successfully!");
+    setSubmitSuccess(true);
     setSubject("");
     setMessage("");
-    onClose();
   };
 
   return (
     <>
       {isOpen && (
         <ModalBackdrop>
-          <ModalContent>
-            <CloseButton onClick={onClose}>Close</CloseButton>
+          <ModalContent ref={modalRef}>
             <h2>Send Message</h2>
             <form onSubmit={handleSubmit}>
               <InputField
@@ -65,7 +97,15 @@ const SendMessageModal: React.FC<SendMessageModalProps> = ({
                 value={message}
                 onChange={handleMessageChange}
               />
-              <button type="submit">Send</button>
+              {validationError && (
+                <p style={{ color: "red" }}>{validationError}</p>
+              )}
+              {submitSuccess && (
+                <p style={{ color: "green" }}>
+                  Contact Email Sent Successfully!
+                </p>
+              )}
+              <Button type="submit">Send</Button>
             </form>
           </ModalContent>
         </ModalBackdrop>
@@ -74,4 +114,4 @@ const SendMessageModal: React.FC<SendMessageModalProps> = ({
   );
 };
 
-export default SendMessageModal;
+export default EmailModal;

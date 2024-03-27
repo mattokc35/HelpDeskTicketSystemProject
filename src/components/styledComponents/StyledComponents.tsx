@@ -1,4 +1,6 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+
+const mobileBreakpoint = "768px";
 
 export const Container = styled.div`
   display: flex;
@@ -17,32 +19,48 @@ export const FormContainer = styled.div`
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  @media (max-width: ${mobileBreakpoint}) {
+    border: none;
+    width: 100%;
+  }
 `;
 
 export const Input = styled.input`
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 3px;
   width: 90%;
+
+  @media (max-width: ${mobileBreakpoint}) {
+    padding: 16px;
+  }
 `;
 
 export const TextArea = styled.textarea`
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 3px;
   width: 90%;
+
+  @media (max-width: ${mobileBreakpoint}) {
+    padding: 16px;
+  }
 `;
 
 export const Button = styled.button`
   margin-top: 10px;
-  padding: 10px 15px;
+  padding: 12px 18px;
   background-color: ${(props) => (props.disabled ? "#ccc" : "#007bff")};
   color: ${(props) => (props.disabled ? "#888" : "white")};
   border: none;
   border-radius: 3px;
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+
+  @media (max-width: ${mobileBreakpoint}) {
+    padding: 16px 24px;
+  }
 `;
 
 export const AdminPanelContainer = styled.div`
@@ -87,12 +105,13 @@ export const ModalBackdrop = styled.div`
 `;
 
 export const ModalContent = styled.div`
-  background-color: grey;
+  background-color: #444;
   padding: 20px;
   border-radius: 5px;
   width: 80%;
   max-width: 400px;
   text-align: center;
+  box-shadow: 0px 10px 8px rgba(0, 0, 0, 0.7);
 `;
 
 export const CloseButton = styled.button`
@@ -105,6 +124,10 @@ export const InputField = styled.input`
   width: 100%;
   margin-bottom: 10px;
   padding: 3px;
+  @media (max-width: ${mobileBreakpoint}) {
+    padding: 20px;
+    width: 80%;
+  }
 `;
 
 export const TextAreaModal = styled.textarea`
@@ -112,4 +135,28 @@ export const TextAreaModal = styled.textarea`
   height: 100px;
   margin-bottom: 10px;
   padding: 3px;
+  @media (max-width: ${mobileBreakpoint}) {
+    padding: 20px;
+    width: 80%;
+  }
+`;
+
+export const PaginationContainer = styled.ul`
+  display: flex;
+  justify-content: center;
+  list-style: none;
+`;
+
+export const PaginationItem = styled.li`
+  margin: 0 5px;
+`;
+
+export const PaginationButton = styled.button<{ isActive: boolean }>`
+  padding: 5px 10px;
+  ${(props) =>
+    props.isActive &&
+    css`
+      background-color: #007bff;
+      color: white;
+    `}
 `;

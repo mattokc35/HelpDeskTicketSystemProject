@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import AdminPanel from "./components/AdminPanel";
-import HomePage from "./components/Home";
+import { Button } from "./components/styledComponents/StyledComponents";
+import AdminPanel from "./pages/AdminPanel";
+import HomePage from "./pages/Home";
 import { fetchTickets } from "./network/NetworkRequests";
 import { TicketInterface } from "./components/Ticket";
 
@@ -38,9 +39,9 @@ function App() {
 
   return (
     <div>
-      <button onClick={handleTogglePanel}>
+      <Button onClick={handleTogglePanel}>
         {showAdminPanel ? "Show Home Page" : "Show Admin Panel"}
-      </button>
+      </Button>
       {showAdminPanel ? (
         <AdminPanel tickets={memoizedTickets} />
       ) : (
